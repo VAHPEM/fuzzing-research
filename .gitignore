@@ -1,0 +1,8 @@
+fuzz_tinyxml2
+fuzz_dom
+fuzz_loadfile
+crashes/
+crashes_dom/
+crashes_loadfile/
+build/
+minimized_corpus/
