@@ -1,31 +1,32 @@
 # Fuzzing Research
 
-This repository documents my experiments with **coverage-guided fuzzing on real-world libraries**.
+This repository contains my experiments with **coverage-guided fuzzing on real-world software libraries**.
 
-The goal of this project is to practice fuzzing techniques, understand how parsers process complex inputs, and design effective fuzzing harnesses using **libFuzzer and sanitizers**.
+The goal of this project is to explore how complex input parsers behave under fuzzing, practice building effective fuzzing harnesses, and study how modern fuzzing tools can be used to discover memory safety issues in widely used libraries.
 
-Each library is fuzzed in a separate folder with its own harness, corpus, and build scripts.
+All experiments use **coverage-guided fuzzing with libFuzzer**, combined with runtime sanitizers such as AddressSanitizer and UndefinedBehaviorSanitizer.
 
 ---
 
-# Fuzzing Setup
+# Fuzzing Environment
 
-Most projects in this repository use the following tools:
+Most projects in this repository use the following toolchain:
 
-- libFuzzer
-- AddressSanitizer (ASAN)
-- UndefinedBehaviorSanitizer (UBSAN)
-- Clang
+- **libFuzzer**
+- **AddressSanitizer (ASAN)**
+- **UndefinedBehaviorSanitizer (UBSAN)**
+- **Clang / LLVM**
 
-Typical workflow:
+Typical fuzzing workflow:
 
-1. Select a target library
-2. Identify interesting parsing APIs
-3. Design fuzzing harnesses
-4. Create seed corpus and dictionary
-5. Compile with sanitizers
+1. Select a real-world target library
+2. Identify interesting parsing or input-processing APIs
+3. Design fuzzing harnesses for those APIs
+4. Create a seed corpus and optional dictionaries
+5. Compile the target with sanitizers enabled
 6. Run coverage-guided fuzzing
-7. Minimize corpus and document results
+7. Improve harness design to increase code coverage
+8. Minimize the corpus and document results
 
 ---
 
@@ -35,33 +36,67 @@ Typical workflow:
 
 Location:
 
+```
 tinyxml2-fuzzing/
+```
 
 Target library:
 
 https://github.com/leethomason/tinyxml2
 
-TinyXML2 is a lightweight C++ XML parser that builds a DOM structure from XML input.
+TinyXML2 is a lightweight C++ XML parser that builds a DOM tree from XML input.
 
-The fuzzing experiments in this project include:
+The fuzzing experiments in this project focus on exploring different parsing paths and DOM processing behavior.
 
-- fuzzing XMLDocument::Parse()
-- fuzzing XMLDocument::LoadFile()
-- DOM traversal after parsing
-- experimenting with different TinyXML2 whitespace modes
-- designing seed corpus and XML dictionary
+Experiments include:
+
+- fuzzing `XMLDocument::Parse()`
+- fuzzing `XMLDocument::LoadFile()`
+- traversing the DOM after parsing
+- experimenting with TinyXML2 whitespace parsing modes
+- designing an XML seed corpus and dictionary
 - corpus minimization
 
 Harnesses implemented:
 
-- harness.cpp – fuzzes Parse()
-- harness_dom.cpp – parses XML and traverses DOM
-- harness_loadfile.cpp – fuzzes file-based parsing
+- `harness.cpp` — fuzzes `Parse()`
+- `harness_dom.cpp` — parses XML and traverses the DOM
+- `harness_loadfile.cpp` — fuzzes file-based parsing
+
+---
+
+## libyaml Fuzzing
+
+Location:
+
+```
+libyaml-fuzzing/
+```
+
+Target library:
+
+https://github.com/yaml/libyaml
+
+libyaml is a C library for parsing and emitting YAML documents.
+
+This fuzzing project explores several parts of the libyaml parsing and emitting pipeline.
+
+Fuzzing targets include:
+
+- `yaml_parser_scan()` — scanner/tokenizer layer
+- `yaml_parser_parse()` — parser event pipeline
+- `yaml_parser_load()` — document composition layer
+- `yaml_emitter_emit()` — YAML emission logic
+- nested emitter harness for structured YAML generation
+- parse → emit round-trip harness
+
+The round-trip harness parses YAML input and re-emits the parsed events, which significantly increases emitter-side code coverage.
 
 ---
 
 # Repository Structure
 
+```
 fuzzing-research/
 │
 ├ README.md
@@ -75,15 +110,27 @@ fuzzing-research/
 │   ├ xml.dict
 │   └ build.sh
 │
+├ libyaml-fuzzing/
+│   ├ harness_scan.cpp
+│   ├ harness_parse.cpp
+│   ├ harness_load.cpp
+│   ├ harness_emit.cpp
+│   ├ harness_emit_nested.cpp
+│   ├ harness_roundtrip_parse_emit.cpp
+│   └ README.md
+│
 └ (future fuzzing targets)
+```
 
-Each fuzzing target contains:
+Each fuzzing project typically contains:
 
-- source code of the library (target/)
-- fuzzing harness
+- fuzzing harness source code
 - seed corpus
-- optional dictionary
-- build script
+- optional dictionaries
+- build scripts or compilation instructions
+- documentation of the fuzzing setup
+
+Large fuzzing artifacts such as generated corpora, crash artifacts, and coverage outputs are intentionally excluded from the repository.
 
 ---
 
@@ -91,17 +138,20 @@ Each fuzzing target contains:
 
 Planned fuzzing experiments include:
 
-- libyaml
-- expat
+- Expat
 - pugixml
-- other parsing libraries
+- additional parsing libraries
+- other input-processing components
 
 ---
 
 # Purpose
 
-This repository serves as:
+This repository serves several purposes:
 
-- a learning project for fuzzing techniques
-- a portfolio of security research experiments
-- a reference for designing fuzzing harnesses for parser libraries
+- learning and practicing fuzzing techniques
+- exploring the internal behavior of real-world parsers
+- experimenting with fuzz harness design
+- building a portfolio of vulnerability research experiments
+
+The focus is on **methodology, coverage exploration, and harness design**, rather than claiming vulnerabilities.
