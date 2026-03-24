@@ -1,4 +1,0 @@
-del:
- nam:del:
- nam:
-  <<: *de

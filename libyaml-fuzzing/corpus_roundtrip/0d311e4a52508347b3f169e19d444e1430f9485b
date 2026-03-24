@@ -1,9 +1,0 @@
-st:
-    - name: Ae
-      as:
-        acve: te
-        sc: 68
-    - name: Bob
-      a:
-       active: false
-        e: 20

@@ -1,4 +1,0 @@
-delts: &def
-  name: test
-m:
-  <<: *def

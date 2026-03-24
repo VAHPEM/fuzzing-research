@@ -1,4 +1,0 @@
-a: &a [0, 2,aaaGGGGGGGGGGGGGGGGGGGGGaaaa.aaaaaaaaaaaaAaaaaa[aaaaaaaaaaaaaaaa%aaaaaaaaaaaa 1]
-": -a
-c:a
-c: *a

@@ -1,3 +1,0 @@
-a: &aZZZZZZZZZZZZZZZZZZZZZZZZZZZ []
-": *a
-c: *a

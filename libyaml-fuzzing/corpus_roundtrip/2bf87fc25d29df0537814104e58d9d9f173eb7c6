@@ -1,6 +1,0 @@
-root:
-  list:
-    - name: Alice
-      attrs:
-        acti    active: false
-        score: 20

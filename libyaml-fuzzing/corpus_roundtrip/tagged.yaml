@@ -1,3 +1,0 @@
-num: !!int 42
-str: !!str hello
-bool: !!bool true

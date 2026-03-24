@@ -1,4 +1,0 @@
-num: !!int ello
-boo: !!bool t2
-str: !/!str eo
-bool: !ool true

@@ -1,7 +1,0 @@
-root:
-  list:
-    - name: Alice
-      attrs:
-        active: tru
-        score: 05
-    - na     e: 20

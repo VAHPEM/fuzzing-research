@@ -1,7 +1,0 @@
-root:
-  list:
-    - wname: Alice
-      as:
-        active: tru
-        score{: 02
-    - na     e: 20

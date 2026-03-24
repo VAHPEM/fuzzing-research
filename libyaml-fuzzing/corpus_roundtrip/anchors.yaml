@@ -1,4 +1,0 @@
-defaults: &def
-  name: test
-item:
-  <<: *def

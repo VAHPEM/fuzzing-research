@@ -1,5 +1,0 @@
-aqualue: !!str ello
-e:  !hKello
-eaqualue: !!?tr hello
-e:  !hKello
-!str$hello

@@ -1,5 +1,0 @@
-dts: &def
- .n: &dd
-  ls: &def
-_a: &f
- nats:

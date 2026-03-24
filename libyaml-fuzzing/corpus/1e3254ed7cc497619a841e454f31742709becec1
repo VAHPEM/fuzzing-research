@@ -1,7 +1,0 @@
-del:el:
- <<m:de:
- nam:
-  <<:
- <<m:del:
- nam:
-  <<: *de6f

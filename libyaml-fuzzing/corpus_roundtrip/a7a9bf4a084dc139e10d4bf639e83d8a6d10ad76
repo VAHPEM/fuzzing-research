@@ -1,9 +1,0 @@
-st:
-    - name: Alice
-      attrs:
-        acve: true
-        sc: 10
-    - name: Bob
-      attrs+:
-        active: false
-        e: 20
