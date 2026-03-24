@@ -1,0 +1,5 @@
+x: |
+ Bne0
+  nr
+  min1
+ l

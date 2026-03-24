@@ -1,0 +1,8 @@
+dedts: &def
+a: &a 
+
+
+
+m:
+  <<dedts: &def
+a: &def

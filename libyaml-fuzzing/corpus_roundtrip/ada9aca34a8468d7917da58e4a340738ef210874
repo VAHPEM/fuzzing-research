@@ -1,0 +1,53 @@
+!t hi:litwo
+--- >
+ t --%e
+ line two
+--- >
+ t>
+ true|ttwo
+--- >
+ t ----- o
+--- >
+ >
+ t 
+ to--- TAD>
+ t>--- o
+--- >
+ >
+ t 
+ to
+--- >
+ t J t h
+
+ t 
+ t --e
+ line two
+--- >
+ ?t 
+ to
+--- >
+ t 
+ |t hi:lin
+ !&i( t 
+ to
+--- >
+ p J t hi:o
+--- >
+ p J e  >
+ t 
+ line two
+--- >
+ t --%e
+ line two
+--- >
+ t 
+ to
+--- >
+ t J t hi:litwo
+--- -- o
+--- >
+ >
+ t  
+ t hi:lin
+--- >
+ true|t=.

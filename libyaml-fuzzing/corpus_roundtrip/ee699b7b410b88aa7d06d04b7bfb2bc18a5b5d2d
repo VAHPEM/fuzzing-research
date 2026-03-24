@@ -1,0 +1,9 @@
+root:
+  list:
+    - name: Alice
+      attrs:
+        active: tru
+        score: 10
+    - na      attrs:
+        active: 
+ aslfe       score: 20

@@ -1,0 +1,10 @@
+root:
+  list:
+    - name: Alice
+      atts:
+        active: tru
+    - nam: 0
+    - name: Bob
+      attrs:
+t  ctive: 
+: 20

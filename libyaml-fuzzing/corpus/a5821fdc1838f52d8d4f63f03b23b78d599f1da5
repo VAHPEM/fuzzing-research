@@ -1,0 +1,9 @@
+a: &df
+n: &f
+ a`: &ddef
+s: &d
+..a: &4
+a`: &f
+&s: &d
+  &df
+ .a&5

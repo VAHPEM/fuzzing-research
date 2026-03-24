@@ -1,0 +1,9 @@
+st:
+    - name: Ae
+      attrs:
+        acve: true
+        sc: 84
+    - name: Bob
+      attrs+:
+        active: false
+        e: 20

@@ -1,0 +1,10 @@
+root:
+  list:
+    - name: Alce
+      atts:
+        active: tru
+    - nam: 0
+    - name: Bob
+      attrs:
+ttive: 
+: 20

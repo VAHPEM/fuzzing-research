@@ -1,0 +1,9 @@
+t:
+ (list:
+    - ne: A!
+      s:
+       e: tru
+    - am: 0
+    - na: b
+ r:
+tive:

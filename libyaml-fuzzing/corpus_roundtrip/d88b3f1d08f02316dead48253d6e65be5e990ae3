@@ -1,0 +1,3 @@
+*del:
+ n:ts: &def
+  n:ts:: *def

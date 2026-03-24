@@ -1,0 +1,30 @@
+---l.---elit hline two
+---% two
+---% ;>
+ t i2  |  |His s line  |His s lin two
+--leLit hiis s line ti2|  |His s line  |His s lin two
+--leLit hiis s line ti2  |  |His s line two *         wo
+---TAG% ;>
+ t Hi|  |siAs:linA  |his s linhi2  |   tHis s l|his s li:nhi1 His s line two
+--le ;>
+ t His2  |  |siAs:linA  |his s linhi2  |  |His s line twowo
+---% ;>
+ t His s l|his   |His  |  |His s line two *         wo
+-"\
+\
+\
+\
+\
+\
+--TAG% ;>
+ t Hi|  |siAs:linA  |his s linhi2  |   tHis s l|his s li:nhi1 His s line two
+--le ;>
+ t His2  |  |siAs:linA  |his s linhi2  |  |His s line twowo
+---% ;>
+ t His s l|his   |His .line twowo
+---% ;>
+ % ;>
+ t His s l|his   \
+\|His s line  |His s lin:
+
+----:

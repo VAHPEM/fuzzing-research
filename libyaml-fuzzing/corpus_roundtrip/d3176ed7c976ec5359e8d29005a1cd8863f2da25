@@ -1,0 +1,92 @@
+dr: &f
+ 
+<<:
+etr: &f !!m:
+<<:
+ :tsruetln:tr: &f
+  !!m:
+<<:
+ !!m:
+<<:
+ :tsruetln:tsruetr: &f
+tr: &f
+  !!m:
+<<:
+ !!m:
+<<:
+ :tsruetln:tsruetr: &f
+  !!m:
+<<etr: &f
+  !!m:
+<<:esrur: &f
+  !!m:
+<<etr: &f
+  !!m:
+<<:etr: &f
+ 
+<<:
+etr: &f !!m:
+<<:
+ :tsruetln:tr: &f
+  !!m:
+<<:
+ !!m:
+<<:
+ :tsruetln:tsruetr
+ 
+2<<:
+etr: &f !!m:
+<<:
+ :tsruetln:tr: &f
+  !!m:
+<<:
+ !!m:
+=<:
+ !!m:
+<<:
+ :tsruetln:tsruetr: &f
+  !!m:
+<<etr: &f
+  !!m:
+<<: &f
+ 
+<<:ruetr: &f
+  !!m:
+<<etr: &f
+  !!m:
+<<:etr: &f
+ 
+2<<:
+etr: &f !!m:
+<<:
+ :tsruetln:tr: &f
+  !!m:
+<<:
+ !!m:
+=<:
+ !!m:
+<<:
+ :tsruetln:tsruetr: &f
+  !!m:
+<<etr: &f
+  !!m:
+<<:etr: &f
+ 
+<<:
+etr: &f !!m:
+<<:
+ :tsruetln:tr: &f
+  !!m:
+<<:
+ !!m:
+<<:
+ :tsruetln:tsruetr: &f
+  !!m:
+<<:
+etr: &f
+  !!m:
+<<:
+etr: &f
+  !!m:
+<B:
+ 

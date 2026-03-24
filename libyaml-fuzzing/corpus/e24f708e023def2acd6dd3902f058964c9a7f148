@@ -1,0 +1,4 @@
+del:
+ el:
+ nam:
+  <<: *de6f

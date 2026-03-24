@@ -1,0 +1,4 @@
+del:
+ n:ts: &def
+  nam:
+  <<: *de6f

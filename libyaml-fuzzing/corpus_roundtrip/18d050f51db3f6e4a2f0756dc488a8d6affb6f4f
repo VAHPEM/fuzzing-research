@@ -1,0 +1,4 @@
+num: !!int e
+boo: !!bool t2
+str: !/!tr eo
+bool: !ool true

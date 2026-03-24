@@ -1,0 +1,12 @@
+aa: &x 0
+*xb3: &x
+&xb3: &x
+&x?-: x
+&x: &x
+&aa: &x 0
+*xb3: &x
+&x?-:vxx?*x3: &x
+&aa: &x 0
+*xb3: &x
+&x?-: x
+*x3:x

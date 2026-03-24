@@ -1,0 +1,4 @@
+num: !!int 4tr hello
+boo: !!bool t2
+str: !!str eo
+bool: !!bool true
