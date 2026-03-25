@@ -1,0 +1,13 @@
+# fuzzing binaries
+fuzz_*
+repro
+repro_*
+
+# findings / minimized artifacts / crashes
+artifacts/
+findings*/
+crash-*
+crashes/
+
+# misc
+*.log
