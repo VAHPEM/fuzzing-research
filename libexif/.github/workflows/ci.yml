@@ -1,0 +1,191 @@
+# SPDX-FileCopyrightText: 2024 Dan Fandrich
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Linux
+
+'on':
+  push:
+    branches:
+      - master
+      - '*/ci'
+    paths-ignore:
+      - '**/*.md'
+      - '.cirrus.yml'
+      - '.appveyor.yml'
+      - 'LICENSES/*'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '**/*.md'
+      - '.cirrus.yml'
+      - '.appveyor.yml'
+      - 'LICENSES/*'
+
+permissions: {}
+
+jobs:
+  linux:
+    name: ${{ matrix.os }} ${{ matrix.cc }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    env:
+      MAKEFLAGS: -j 5
+      DEBIAN_FRONTEND: noninteractive
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+        cc: [gcc, clang]
+        packages: [build-essential clang autoconf automake autopoint libtool gettext]
+        cflags: [-Wall -Wextra -O2]
+        include:
+          # This uses ASAN and UBSAN, enables more warnings, plus errors out on any warnings
+          - name: sanitize
+            os: ubuntu-24.04
+            packages: clang build-essential autoconf automake autopoint libtool gettext
+            cc: clang
+            # TODO: fix the code to eliminate the -Wno-... disables
+            cflags: -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error -g -Wall -Wextra -Wno-assign-enum -Wno-switch -Wno-implicit-fallthrough -Wno-shorten-64-to-32 -Wno-conversion -Wno-sign-conversion -Wlong-long -Wmultichar -Wformat-nonliteral -Wimplicit-function-declaration -Wpointer-arith -Wwrite-strings -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wfloat-equal -Wsign-compare -Wundef -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wcast-align -Wunused -Waddress -Wattributes -Wbad-function-cast -Wdiv-by-zero -Wformat-security -Wempty-body -Wmissing-field-initializers -Wmissing-noreturn -Wold-style-definition -Wredundant-decls -Wtype-limits -Wunreachable-code -Wunused-parameter -Wignored-qualifiers -Wvla -Wshift-sign-overflow -Wlanguage-extension-token -Wenum-conversion -Wsometimes-uninitialized -Wmissing-variable-declarations -Wheader-guard -Wunused-const-variable -Wpragmas -Wunreachable-code-break -Wdouble-promotion -Wcomma -Wextra-semi-stmt
+            ldflags: -fsanitize=address -fsanitize=undefined -fsanitize-address-use-after-scope -fsanitize-undefined-trap-on-error -g
+            mflags: AM_CFLAGS=-Werror
+          - name: powerpc cross-compile
+            os: ubuntu-24.04
+            packages: gcc-14-powerpc-linux-gnu libc6-dev-powerpc-cross build-essential autoconf automake autopoint libtool gettext
+            cc: powerpc-linux-gnu-gcc-14
+            cflags: -g -Wall -Wextra
+            ldflags: -static
+            configure: --host=powerpc-linux-gnu
+            skiptests: true
+          - name: C90
+            os: ubuntu-24.04
+            packages: build-essential autoconf automake autopoint libtool gettext
+            cc: gcc
+            cflags: -Wall -Wextra -O2 -std=iso9899:1990 -D_XOPEN_SOURCE=500
+          - name: disable-nls
+            os: ubuntu-24.04
+            packages: build-essential autoconf automake autopoint libtool gettext
+            cc: gcc
+            cflags: -Wall -Wextra -O2
+            configure: --disable-nls
+          - name: failmalloc
+            # TODO: get ASAN working again
+            os: ubuntu-24.04
+            packages: build-essential autoconf automake autopoint libtool gettext
+            cc: gcc
+            cflags: -Wall -Wextra -O2
+            ldflags: -Wall -Wextra -O2
+            configure: --with-failmalloc="$HOME/failmalloc/lib"
+            failmalloc: true
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+
+      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v4
+        if: matrix.failmalloc == true
+        id: cache
+        with:
+          path: ~/failmalloc/lib
+          key: ${{ runner.os }}-${{ matrix.os }}-failmalloc-1.0
+
+      - name: 'install prereqs'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.packages }}
+
+      - name: 'build failmalloc'
+        if: matrix.failmalloc == true && steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSORL --retry 8 https://download.savannah.nongnu.org/releases/failmalloc/failmalloc-1.0.tar.gz
+          tar xaf failmalloc-1.0.tar.gz
+          cd failmalloc-1.0
+          # Fix compiling with modern glibc which has removed definitions from the headers.
+          # Disable failmalloc on program exit so system code can run unimpeded.
+          patch -p0 << EOF
+          --- failmalloc.c.orig	2019-07-31 08:31:30.705539712 -0700
+          +++ failmalloc.c	2025-05-12 22:54:49.184931178 -0700
+          @@ -25,6 +25,11 @@
+           #include <time.h>
+           #include <errno.h>
+           
+          +/* No longer found in glibc headers */
+          +extern void *(*__malloc_hook) (size_t, const void *);
+          +extern void *(*__realloc_hook) (void *ptr, size_t size, const void *);
+          +extern void *(*__memalign_hook) (size_t, size_t, const void *);
+          +
+           static void failmalloc_install (void);
+           static void failmalloc_uninstall (void);
+           
+          @@ -202,7 +207,8 @@
+             srand (getpid () * 32452843 + time (NULL) * 49979687);
+           
+             failmalloc_install ();
+          +  atexit(failmalloc_uninstall);
+           }
+           
+          -void (*__malloc_initialize_hook) (void) = failmalloc_init;
+          +void (*volatile __malloc_initialize_hook) (void) = failmalloc_init;
+           
+          EOF
+          ./configure --prefix="$HOME/failmalloc" --disable-dependency-tracking
+          make
+          make install
+
+      - name: 'configure'
+        run: autoreconf -sfiv && ./configure --disable-dependency-tracking --prefix="$PWD"/install ${{ matrix.configure }} CFLAGS="${{ matrix.cflags }}" LDFLAGS="${{ matrix.ldflags }}" CC="${{ matrix.cc }}" || { tail -300 config.log; false; }
+
+      - name: 'make'
+        run: make V=1 ${{ matrix.mflags }}
+
+      - name: 'test'
+        if: matrix.skiptests != true
+        env:
+          ASAN_OPTIONS: strict_string_checks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_init_order=1:detect_leaks=1
+        run: make V=1 check || { tail -n 500 test*/test-suite.log; false; }
+
+      - name: 'install'
+        run: make V=1 install
+
+  coverage:
+    name: Linux code coverage
+    runs-on: ${{ matrix.os }}
+    env:
+      MAKEFLAGS: -j 5
+      DEBIAN_FRONTEND: noninteractive
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            packages: build-essential autoconf automake autopoint libtool gettext subversion libpopt-dev lcov
+            cflags: -g -O0 --coverage
+            ldflags: -g -O0 --coverage
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.0
+      - name: 'install prereqs'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-suggests --no-install-recommends ${{ matrix.packages }}
+      - name: 'install libexif-testsuite'
+        run: |
+          git clone --depth=1 https://github.com/libexif/libexif-testsuite.git
+          cd libexif-testsuite
+          mkdir src
+          # point to the libexif code checked out in actions/checkout above
+          ln -s "${GITHUB_WORKSPACE}" src/libexif
+          ./build-config.sh
+          autoreconf -sivf
+      - name: 'configure'
+        run: cd libexif-testsuite && ./configure --prefix="$PWD"/install --disable-dependency-tracking CFLAGS="${{ matrix.cflags }}" LDFLAGS="${{ matrix.ldflags }}" || { tail -n 500 config.log; false; }
+      - name: 'build'
+        run: |
+          # Build libexif via its checkout path, not through the symlink at
+          # libexif-testsuite/src/libexif, so that Coveralls can find the
+          # source code
+          make V=1
+          make -C libexif-testsuite V=1
+      - name: 'coverage tests'
+        run: make -C libexif-testsuite V=1 check || { tail -n 500 test*/test-suite.log src/libexif/test*/test-suite.log; false; }
+      - name: 'coverage analysis'
+        run: cd libexif-testsuite && lcov -c -d src/libexif/libexif/ -o lcov.info
+      - name: push to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.github_token }}
+          file: libexif-testsuite/lcov.info

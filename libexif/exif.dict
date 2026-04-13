@@ -1,0 +1,64 @@
+# JPEG markers
+"\\xFF\\xD8"
+"\\xFF\\xD9"
+"\\xFF\\xE0"
+"\\xFF\\xE1"
+"JFIF\\x00"
+"Exif\\x00\\x00"
+
+# TIFF / EXIF byte order + magic
+"II\\x2A\\x00"
+"MM\\x00\\x2A"
+"II"
+"MM"
+
+# Common IFD/tag ids
+"\\x01\\x0F"   # Make
+"\\x01\\x10"   # Model
+"\\x01\\x12"   # Orientation
+"\\x01\\x1A"   # XResolution
+"\\x01\\x1B"   # YResolution
+"\\x01\\x28"   # ResolutionUnit
+"\\x01\\x31"   # Software
+"\\x01\\x32"   # DateTime
+"\\x87\\x69"   # ExifIFDPointer
+"\\x88\\x25"   # GPSInfoIFDPointer
+"\\x02\\x13"   # YCbCrPositioning
+"\\x02\\x01"   # JPEGInterchangeFormat
+"\\x02\\x02"   # JPEGInterchangeFormatLength
+"\\x90\\x00"   # ExifVersion
+"\\x90\\x03"   # DateTimeOriginal
+"\\x92\\x01"   # ShutterSpeedValue
+"\\x92\\x02"   # ApertureValue
+"\\x92\\x07"   # MeteringMode
+"\\x92\\x09"   # Flash
+"\\x92\\x0A"   # FocalLength
+"\\xA0\\x02"   # PixelXDimension
+"\\xA0\\x03"   # PixelYDimension
+"\\xA0\\x05"   # InteroperabilityIFDPointer
+
+# GPS tags
+"\\x00\\x00"   # GPSVersionID
+"\\x00\\x01"   # GPSLatitudeRef
+"\\x00\\x02"   # GPSLatitude
+"\\x00\\x03"   # GPSLongitudeRef
+"\\x00\\x04"   # GPSLongitude
+"\\x00\\x05"   # GPSAltitudeRef
+"\\x00\\x06"   # GPSAltitude
+
+# Common EXIF values / strings
+"Canon"
+"NIKON"
+"Nikon"
+"OLYMPUS"
+"FUJIFILM"
+"KODAK"
+"Panasonic"
+"Apple"
+"iPhone"
+
+# Orientation values often worth preserving/mutating around
+"\\x00\\x01"
+"\\x00\\x03"
+"\\x00\\x06"
+"\\x00\\x08"
