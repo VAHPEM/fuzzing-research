@@ -4,29 +4,59 @@ This repository contains my experiments with **coverage-guided fuzzing on real-w
 
 The goal of this project is to explore how complex input parsers behave under fuzzing, practice building effective fuzzing harnesses, and study how modern fuzzing tools can be used to discover robustness issues in widely used libraries.
 
-All experiments use **coverage-guided fuzzing with libFuzzer**, combined with runtime sanitizers such as AddressSanitizer and UndefinedBehaviorSanitizer.
+The projects use a combination of **libFuzzer**, **AFL++**, and **AI-assisted analysis**.
 
 ---
 
 # Fuzzing Environment
 
-Most projects in this repository use the following toolchain:
+This repository uses multiple fuzzing toolchains depending on the target.
+
+## Fuzzing Engines
 
 - libFuzzer
+- AFL++
+
+## Sanitizers
+
 - AddressSanitizer (ASAN)
 - UndefinedBehaviorSanitizer (UBSAN)
+
+## Compiler
+
 - Clang / LLVM
 
-Typical fuzzing workflow used in these projects:
+## AI-Assisted Analysis
+
+Some projects integrate **AI-assisted code analysis** to improve target selection and fuzzing efficiency.
+
+Tools used:
+
+- Qwen (Alibaba Cloud LLM)
+- OpenHands (agent-based code exploration framework)
+
+AI is used to:
+- analyze repository structure
+- identify input entry points
+- trace data flow through parsing logic
+- highlight potential vulnerability patterns
+- suggest promising fuzzing targets
+
+---
+
+# Fuzzing Workflow
+
+Typical workflow used in these projects:
 
 1. Select a real-world target library
-2. Identify interesting parsing or input-processing APIs
-3. Design fuzzing harnesses for those APIs
-4. Create a seed corpus and optional dictionaries
-5. Compile the target with sanitizers enabled
-6. Run coverage-guided fuzzing
-7. Improve harness design to increase code coverage
-8. Minimize inputs and analyze sanitizer findings
+2. Perform static exploration (manual + AI-assisted analysis)
+3. Identify high-risk parsing or input-processing APIs
+4. Design fuzzing harnesses for those APIs
+5. Create seed corpus and dictionaries
+6. Compile with sanitizers enabled
+7. Run coverage-guided fuzzing (libFuzzer or AFL++)
+8. Improve harness design to increase coverage
+9. Minimize corpus and analyze results
 
 ---
 
@@ -120,17 +150,70 @@ These issues were discovered through fuzzing and reported upstream.
 
 ---
 
+## pugixml Fuzzing
+
+Folder:
+
+pugixml/
+
+Target library:
+
+https://github.com/zeux/pugixml
+
+pugixml is a high-performance C++ XML parsing library.
+
+This project combines **AI-assisted analysis** and **coverage-guided fuzzing (AFL++)** to explore its parsing logic.
+
+### AI-assisted target selection
+
+Qwen + OpenHands were used to:
+- identify XML input entry points
+- trace parsing logic (`load_buffer → parse_tree`)
+- locate complex subsystems (DOCTYPE, entities, escapes)
+- suggest fuzzing targets based on code structure
+
+### Fuzzing targets
+
+- DOCTYPE parsing (recursive structures)
+- Entity / numeric reference parsing
+- Attribute and PCDATA handling
+
+### Harnesses
+
+- `fuzz_doctype.cpp` — targets DOCTYPE parsing
+- `fuzz_entities.cpp` — targets entity and numeric reference parsing
+- `fuzz_attr_pcdata.cpp` — targets attribute and text processing
+
+### Fuzzing setup
+
+- AFL++
+- AddressSanitizer
+- custom dictionaries
+- minimized seed corpus
+
+### Result
+
+- No crashes discovered during fuzzing campaigns
+- Stable execution with consistent behavior
+- Good path exploration achieved
+
+This project demonstrates:
+- integration of AI into fuzzing workflows
+- targeted harness design
+- evaluation of parser robustness
+
+---
+
 # Repository Contents
 
-This repository contains multiple fuzzing projects.  
 Each project folder typically includes:
 
 - fuzzing harness source code
 - seed corpus used for fuzzing
-- build scripts
-- documentation describing the fuzzing setup and targets
+- dictionaries (if applicable)
+- build instructions and documentation
 
-Large fuzzing artifacts such as generated corpora, crash artifacts, and coverage outputs are intentionally excluded from the repository.
+Large fuzzing artifacts such as generated corpora, crash files, and coverage outputs are intentionally excluded.
 
 ---
 
@@ -138,10 +221,7 @@ Large fuzzing artifacts such as generated corpora, crash artifacts, and coverage
 
 Planned fuzzing experiments include:
 
-- Expat
-- pugixml
-- additional parsing libraries
-- other input-processing components
+- more complex real-world software components
 
 ---
 
@@ -150,8 +230,9 @@ Planned fuzzing experiments include:
 This repository serves several purposes:
 
 - learning and practicing fuzzing techniques
-- exploring the internal behavior of real-world parsers
-- experimenting with fuzz harness design
-- building a portfolio of vulnerability research experiments
+- exploring internal behavior of real-world parsers
+- experimenting with harness design and coverage improvement
+- integrating AI-assisted analysis into vulnerability research
+- building a portfolio of fuzzing and security research projects
 
-The focus is on **methodology, coverage exploration, and harness design**, while documenting interesting sanitizer findings encountered during fuzzing.
+The focus is on **methodology, workflow, and coverage exploration**, while documenting interesting findings during fuzzing.
