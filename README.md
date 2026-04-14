@@ -204,12 +204,62 @@ This project demonstrates:
 
 ---
 
+## libexif Fuzzing
+
+Folder:
+
+libexif/
+
+Target library:
+
+https://github.com/libexif/libexif
+
+libexif is a C library for parsing, editing, and saving EXIF metadata embedded in image files.
+
+This project focuses on fuzzing EXIF parsing logic using AFL++ and persistent-mode harnesses.
+
+### Fuzzing targets
+
+- `exif_data_new_from_data()` — direct EXIF parsing from raw buffers
+- `ExifLoader` — incremental parsing pipeline (`exif_loader_write`, `exif_loader_get_data`)
+- parse → traverse → serialize workflow
+- byte-order mutation followed by serialization
+
+### Harnesses
+
+- `afl-libexif-harness.c` — direct parser harness with traversal, maker note processing, and serialization
+- `afl-libexif-loader-harness.c` — loader-based harness simulating real-world ingestion paths
+
+### Fuzzing setup
+
+- AFL++
+- AddressSanitizer
+- persistent mode (`__AFL_LOOP`)
+- custom EXIF/JPEG dictionary
+- minimized corpus using `afl-cmin`
+
+### Result
+
+- No crashes or hangs observed
+- Stable execution (100% stability)
+- ~25k exec/sec throughput
+- ~2500+ corpus inputs generated
+- 500+ new edges discovered
+
+This project demonstrates:
+- fuzzing of binary metadata formats
+- multi-target harness design
+- importance of seed diversity for structured inputs
+- limitations of mutation-based fuzzing on complex formats like EXIF
+
+---
+
 # Repository Contents
 
 Each project folder typically includes:
 
 - fuzzing harness source code
-- seed corpus used for fuzzing
+- seed corpus used for fuzzing (minimized)
 - dictionaries (if applicable)
 - build instructions and documentation
 
@@ -222,6 +272,8 @@ Large fuzzing artifacts such as generated corpora, crash files, and coverage out
 Planned fuzzing experiments include:
 
 - more complex real-world software components
+- deeper structure-aware fuzzing techniques
+- grammar-based fuzzing for complex formats
 
 ---
 
