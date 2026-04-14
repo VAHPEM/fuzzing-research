@@ -1,0 +1,4 @@
+<!DOCTYPE test [
+<!ENTITY a "AAAA">
+]>
+<root>&a;</root>

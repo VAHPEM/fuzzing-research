@@ -1,0 +1,5 @@
+<!DOCTYPE root [
+<!ENTITY % pe1 "<!ELEMENT root ANY>">
+%pe1;
+]>
+<root>test</root>
