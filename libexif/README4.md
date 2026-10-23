@@ -138,3 +138,46 @@ This work may serve as a foundation for:
 - Structure-aware EXIF fuzzing
 - JPEG-aware preprocessing harnesses
 - Integration with continuous fuzzing systems such as OSS-Fuzz
+
+---
+
+## Structure-aware MakerNote harness (v1)
+
+The direct/loader harnesses above feed whole Exif/TIFF blobs to
+`exif_data_new_from_data()`. That left the vendor MakerNote parsers
+(`exif-mnote-data-*.c`) at ~0% coverage and 0 crashes — not because they are
+robust, but because they were **reachable in code yet unreached by inputs**.
+
+**Root cause.** A MakerNote (tag `0x927C`) is only interpreted when it sits
+inside the EXIF sub-IFD, reached from IFD0 via the ExifIFDPointer tag `0x8769`.
+Blind mutation of whole JPEG/Exif blobs essentially never synthesises that
+nested skeleton *and* a recognised per-vendor signature, so `interpret_maker_note()`
+and every `exif_mnote_data_<vendor>_load()` were never entered.
+
+**Fix.** `libexif-mnote-harness.c` builds the `IFD0 → ExifIFD → MakerNote`
+skeleton itself and splices the fuzzer bytes straight into the MakerNote value.
+`byte[0]` selects the vendor; the per-vendor magic bytes are verified against
+libexif's own `*_identify()` functions (Nikon/Sanyo/Epson are dispatched by the
+olympus module, Casio by the pentax module).
+
+**Validation (local clang/gcc + gcov build).** A single untuned run over a
+garbage payload already entered the vendor parsers:
+
+| file | lines executed |
+|---|---|
+| exif-mnote-data.c (dispatcher) | ~68% |
+| olympus (incl. Nikon/Sanyo/Epson) | ~47% |
+| pentax (incl. Casio) | ~41% |
+| fuji | ~34% |
+| canon | ~32% |
+| apple | 0% (identify matches but not yet selected — TODO) |
+
+**Files.** `libexif-mnote-harness.c` (libFuzzer entry), `gen_mnote_seeds.py`
+(extracts real MakerNote bytes from vendor JPEGs into `[vendor_byte][note]`
+seeds), `mnote.dict` (vendor magic + TIFF tokens).
+
+**Next.** libFuzzer + ASan + UBSan campaign seeded from real vendor photos.
+Priority sinks, all now reachable: each vendor's `*_get_value` (OOB on value
+formatting), sub-IFD offset/count fields trusted from the note, and integer
+handling in the `exif_data_save_data()` re-encode path. Any finding must pass a
+novelty check (issue tracker + closed PRs + CVE + OSV) before disclosure.
