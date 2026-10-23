@@ -38,6 +38,7 @@ README** (linked in the table below).
 | toml++ | TOML | libFuzzer | parser / formatter / JSON / YAML / `at_path()`; **2 undefined-behavior bug families reported upstream** | [tomlplusplus-fuzzing/](tomlplusplus-fuzzing/README3.md) |
 | pugixml | XML | AFL++ | AI-assisted target selection; DOCTYPE / entity / PCDATA paths | [pugixml/](pugixml/README5.md) |
 | libexif | EXIF metadata | AFL++ | persistent mode; direct + loader harnesses; ~25k exec/s | [libexif/](libexif/README4.md) |
+| libredwg | DWG/DXF (CAD) | libFuzzer | DXF-only harness (`dwg_read_dxf`) targeting the OSS-Fuzz-shallow `in_dxf.c`; code review + build notes; **campaign pending** | [libredwg/](libredwg/README.md) |
 | quirc | QR decode | libFuzzer / AFL++ | reproduced a `quirc_flip` out-of-bounds on oversized grids — matched the already-known issue #91, kept as a methodology case study | [quirc/](quirc/README.md) |
 
 ## Repository layout
