@@ -195,3 +195,24 @@ novelty check (issue tracker + closed PRs + CVE + OSV) before disclosure.
   seeds. From the existing `corpus_min` it yields ~1378 real-note seeds spread
   across all live vendors, which start the campaign deep inside the per-vendor
   entry parsers instead of cold.
+
+
+### Campaign result (2026-10-23)
+
+Ran the v2 harness with libFuzzer + AddressSanitizer + UndefinedBehaviorSanitizer,
+8 parallel jobs, seeded with ~1378 real MakerNote bodies extracted by
+`gen_mnote_seeds.py` from `corpus_min`. Replaying the seeds alone already covered
+**76-90%** of the Canon/Olympus/Fuji/Pentax loaders and their entry parsers
+(versus ~0% for the whole-blob harnesses).
+
+Over ~2 hours and ~30M executions edge coverage **plateaued at ~5000 edges with
+0 crashes / OOMs / timeouts** — consistent with libexif being under continuous
+OSS-Fuzz. The reusable contribution here is the harness + generator that make the
+per-vendor MakerNote parsers *reachable at all*; squeezing new findings out of
+this surface needs a different lever rather than more wall-clock:
+
+- `-use_value_profile=1` to get past the magic/offset comparisons in the parsers;
+- Canon-specific seeds for the still-cold `mnote-canon-entry.c` (~7.5%);
+- or pivoting to a higher-ceiling, under-fuzzed target.
+
+No memory-safety vulnerability is claimed.
