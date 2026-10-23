@@ -181,3 +181,17 @@ Priority sinks, all now reachable: each vendor's `*_get_value` (OOB on value
 formatting), sub-IFD offset/count fields trusted from the note, and integer
 handling in the `exif_data_save_data()` re-encode path. Any finding must pass a
 novelty check (issue tracker + closed PRs + CVE + OSV) before disclosure.
+
+
+### v2 update
+
+- **Apple removed.** libexif's `interpret_maker_note()` has the Apple branch
+  commented out ("disabled until apple makernote can also be saved") — it is
+  dead code, so Apple is dropped from the harness vendor table (live vendors:
+  Canon, Olympus V1/V2 incl. Nikon/Sanyo/Epson, Fuji, Pentax/Casio).
+- **Real-seed generator.** `gen_mnote_seeds.py` now follows
+  `IFD0 -> ExifIFDPointer(0x8769) -> EXIF sub-IFD -> MakerNote(0x927C)`,
+  honours TIFF byte order, and emits exact `[vendor_byte][note-after-signature]`
+  seeds. From the existing `corpus_min` it yields ~1378 real-note seeds spread
+  across all live vendors, which start the campaign deep inside the per-vendor
+  entry parsers instead of cold.
