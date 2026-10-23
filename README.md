@@ -254,6 +254,24 @@ This project demonstrates:
 
 ---
 
+## quirc Fuzzing
+
+Folder:
+
+quirc/
+
+Target library:
+
+https://github.com/dlbeer/quirc
+
+quirc is a small C QR-code recognition library; QR decoding is an attacker-reachable surface on mobile.
+
+This project fuzzes the full recognition pipeline (identify, extract, decode) and the `quirc_flip` mirror path using libFuzzer and AFL++ with AddressSanitizer (ASan) and UndefinedBehaviorSanitizer (UBSan).
+
+Result: a reproducible stack-buffer-overflow in `quirc_flip` on oversized grids. It was later found to match the previously reported (and still unfixed) issue #91, so it is documented as a methodology case study rather than a new finding. See `quirc/README.md`.
+
+---
+
 # Repository Contents
 
 Each project folder typically includes:
